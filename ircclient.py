@@ -1,17 +1,30 @@
+import time
+import threading
 import socket
 
-HOST = "chat.freenode.net"
+HOST = "irc.freenode.net"
 PORT = 6667
 
-def send_data(socket, command):
-    socket.send(command + '\n')
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((HOST, PORT))
+SOCK = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+SOCK.connect((HOST, PORT))
+SOCK.send(b"NICK Team4\r\n")
+SOCK.send(b"USER Team4bot 0 * :Team 4 test bot\r\n")
+SOCK.send(b"JOIN :#ldnpydojo\r\n")
 
-    s.send(b"USER Team4\n")
-    s.send(b"NICK Team4\n")
-    s.send(b"JOIN :#ldnpydojo\n")
-    data = s.recv(1024)
 
-    print(data)
+def recieve():
+    while 1:
+        recv = SOCK.recv(1024)
+        if b"PRIVMSG" in recv and b"NOTICE" not in recv:
+            print(recv.decode('ascii'))
+        time.sleep(5)
+
+
+if __name__ == '__main__':
+    threading.Thread(target=recieve).start()
+    while 1:
+        message = input("> ")
+        to_send = message.encode('ascii')
+        SOCK.send(b"PRIVMSG #ldnpydojo :" + to_send + b"\r\n")
+        time.sleep(2)
