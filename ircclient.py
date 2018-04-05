@@ -14,7 +14,7 @@ SOCK.send(b"JOIN :#ldnpydojo\r\n")
 
 
 def recieve():
-    while 1:
+    while True:
         recv = SOCK.recv(1024)
         if b"PRIVMSG" in recv and b"NOTICE" not in recv:
             print(recv.decode('ascii'))
@@ -23,7 +23,7 @@ def recieve():
 
 if __name__ == '__main__':
     threading.Thread(target=recieve).start()
-    while 1:
+    while True:
         message = input("> ")
         to_send = message.encode('ascii')
         SOCK.send(b"PRIVMSG #ldnpydojo :" + to_send + b"\r\n")
